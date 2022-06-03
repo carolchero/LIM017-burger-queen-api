@@ -1,5 +1,7 @@
 const bcrypt = require('bcrypt');
-
+const {
+  schemeTablaUser,
+} = require('../models/modelScheme');
 const {
   requireAuth,
   requireAdmin,
@@ -115,6 +117,18 @@ module.exports = (app, next) => {
    * @code {403} si ya existe usuaria con ese `email`
    */
   app.post('/users', requireAdmin, (req, resp, next) => {
+    const emailFromReq = req.body.email;
+    const paswordFromReq = req.body.password;
+    schemeTablaUser.create({
+      email: emailFromReq,
+      password: paswordFromReq,
+    }).then((data) => {
+      resp.status(200).json({
+        email: data.dataValues.email,
+        password: data.dataValues.password,
+      });
+    })
+      .catch((error) => { resp.status(500).json({ message: error.message }); });
   });
 
   /**

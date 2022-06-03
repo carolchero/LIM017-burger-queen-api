@@ -2,6 +2,9 @@ const {
   requireAuth,
   requireAdmin,
 } = require('../middleware/auth');
+const {
+  schemeTablaProduct,
+} = require('../models/modelScheme');
 
 /** @module products */
 module.exports = (app, nextMain) => {
@@ -28,6 +31,9 @@ module.exports = (app, nextMain) => {
    * @code {401} si no hay cabecera de autenticación
    */
   app.get('/products', requireAuth, (req, resp, next) => {
+    schemeTablaProduct.findAll()
+      .then((data) => { resp.status(200).json({ products: data }); })
+      .catch((error) => { resp.status(500).json({ message: error.message }); });
   });
 
   /**
@@ -72,7 +78,30 @@ module.exports = (app, nextMain) => {
    * @code {403} si no es admin
    * @code {404} si el producto con `productId` indicado no existe
    */
+
   app.post('/products', requireAdmin, (req, resp, next) => {
+    const emailFromReq = req.body.name;
+    const priceFromReq = req.body.price;
+    const imageFromReq = req.body.image;
+    const typeFromReq = req.body.type;
+    const dataEntryFromReq = req.body.dataEntry;
+    schemeTablaProduct.create({
+      name: emailFromReq,
+      price: priceFromReq,
+      image: imageFromReq,
+      type: typeFromReq,
+      dataEntry: dataEntryFromReq,
+    }).then((data) => {
+      resp.status(200).json({
+        id: data.dataValues.id,
+        name: data.dataValues.name,
+        price: data.dataValues.price,
+        image: data.dataValues.image,
+        type: data.dataValues.type,
+        dateEntry: data.dataValues.dateEntry,
+      });
+    })
+      .catch((error) => { resp.status(500).json({ message: error.message }); });
   });
 
   /**

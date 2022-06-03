@@ -1,15 +1,37 @@
 const express = require('express');
+// eslint-disable-next-line import/no-unresolved
+// const pg = require('pg');
 const config = require('./config');
 const authMiddleware = require('./middleware/auth');
 const errorHandler = require('./middleware/error');
 const routes = require('./routes');
 const pkg = require('./package.json');
 
+// const pgClient = new pg.Client({ connectionString: config.dbUrl });
+
 const { port, dbUrl, secret } = config;
 const app = express();
 
 // TODO: Conexión a la Base de Datos (MongoDB o MySQL)
+const {
+  postgreConnection,
+} = require('./database/database');
 
+const connection = postgreConnection;
+
+// llamando a modelos
+const {
+  schemeTablaUser,
+  schemeTablaProduct,
+} = require('./models/modelScheme');
+
+try {
+  connection.authenticate();
+  console.log('conexión establecida correctamente a la base de datos...');
+  connection.sync({ alter: true });
+} catch (error) {
+  console.error('No se pudo conectar a la base de datos. Finalizando el backend...', error);
+}
 app.set('config', config);
 app.set('pkg', pkg);
 
@@ -30,3 +52,10 @@ routes(app, (err) => {
     console.info(`App listening on port ${port}`);
   });
 });
+
+/* pgClient.connect();
+pgClient.query('SELECT NOW()', (err, res) => {
+  console.log(err, res);
+  pgClient.end();
+});
+ */
