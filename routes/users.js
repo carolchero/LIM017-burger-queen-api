@@ -119,13 +119,16 @@ module.exports = (app, next) => {
   app.post('/users', requireAdmin, (req, resp, next) => {
     const emailFromReq = req.body.email;
     const paswordFromReq = req.body.password;
+    const rolesFromReq = req.body.roles;
     schemeTablaUser.create({
       email: emailFromReq,
       password: paswordFromReq,
+      roles: rolesFromReq,
     }).then((data) => {
       resp.status(200).json({
         email: data.dataValues.email,
         password: data.dataValues.password,
+        roles: data.dataValues.roles,
       });
     })
       .catch((error) => { resp.status(500).json({ message: error.message }); });

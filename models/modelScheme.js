@@ -23,7 +23,11 @@ const schemeTablaUser = connection.define('user', {
     }
   },
   password: {
-    type: dataType.STRING
+    type: dataType.STRING,
+  },
+  roles: {
+    type: dataType.BOOLEAN,
+    defaultValue: false,
   }
 
 }, { timestamps: false });
@@ -51,9 +55,9 @@ const schemeTablaProduct = connection.define('product', {
     type: dataType.STRING,
     allowNull: false
   },
-  dataEntry: {
+  dateEntry: {
     type: dataType.DATE,
-    defaultValue: dataType.NOW
+    defaultValue: dataType.NOW,
   },
 }, { timestamps: false });
 
