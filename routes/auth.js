@@ -23,13 +23,18 @@ module.exports = (app, nextMain) => {
     const emailFromReq = req.body.email;
     const passwordFromReq = req.body.password;
 
-    const conditionToLogin = await schemeTablaUser.findOne(
+    if (emailFromReq == null || passwordFromReq == null || emailFromReq === '' || passwordFromReq === '') {
+      return resp.status(400).json({ message: 'Email and password must not be empty.' });
+    }
+
+    const foundedUser = await schemeTablaUser.findOne(
       { where: { email: emailFromReq, password: passwordFromReq } },
     );
-    if (conditionToLogin) {
-      return resp.status(200).json({ data: conditionToLogin.dataValues });
+
+    if (foundedUser) {
+      return resp.status(200).json({ accessToken: 123456789 });
     }
-    resp.status(500).json({ message: 'user is not exist' });
+    resp.status(404).json({ message: 'Credentials are invalid.' });
     // TODO: autenticar a la usuarix
     next();
   });
