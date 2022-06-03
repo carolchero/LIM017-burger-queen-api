@@ -20,10 +20,7 @@ const {
 const connection = postgreConnection;
 
 // llamando a modelos
-const {
-  schemeTablaUser,
-  schemeTablaProduct,
-} = require('./models/modelScheme');
+const scheme = require('./models/modelScheme');
 
 try {
   connection.authenticate();
