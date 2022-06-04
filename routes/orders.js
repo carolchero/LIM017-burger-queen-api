@@ -30,7 +30,9 @@ module.exports = (app, nextMain) => {
    * @code {200} si la autenticación es correcta
    * @code {401} si no hay cabecera de autenticación
    */
-  app.get('/orders', requireAuth, (req, resp, next) => {
+  app.get('/orders/:_page/:_limit', requireAuth, (req, resp, next) => {
+    console.log("_page: ", req.params['_page']);
+    console.log("_limit: ", req.params['_limit']);
   });
 
   /**

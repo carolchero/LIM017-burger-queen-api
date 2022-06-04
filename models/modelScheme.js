@@ -20,10 +20,12 @@ const schemeTablaUser = connection.define('user', {
     unique: {
       args: true,
       msg: 'Email address already in use!',
-    }
+    },
+    allowNull: false
   },
   password: {
     type: dataType.STRING,
+    allowNull: false
   },
   roles: {
     type: dataType.BOOLEAN,

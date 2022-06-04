@@ -53,7 +53,16 @@ module.exports = (app, nextMain) => {
    * @code {401} si no hay cabecera de autenticación
    * @code {404} si el producto con `productId` indicado no existe
    */
-  app.get('/products/:productId', requireAuth, (req, resp, next) => {
+  app.get('/products/:productId', requireAuth, async (req, resp, next) => {
+    const productIdasParm = req.params.productId;
+
+    const foundedProduct = await schemeTablaProduct.findByPk(productIdasParm);
+    if (foundedProduct) {
+      return resp.status(200).json({ foundedProduct });
+    }
+    resp.status(404).json({ message: 'Product not found.' });
+    // req.body
+    // req.params
   });
 
   /**
