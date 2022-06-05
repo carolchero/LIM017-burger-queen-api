@@ -1,6 +1,8 @@
 const jwt = require('jsonwebtoken');
 const config = require('../config');
-
+const {
+  schemeTablaUser,
+} = require('../models/modelScheme');
 const { secret } = config;
 
 /** @module auth */
@@ -17,13 +19,22 @@ module.exports = (app, nextMain) => {
    * @code {400} si no se proveen `email` o `password` o ninguno de los dos
    * @auth No requiere autenticación
    */
-  app.post('/auth', (req, resp, next) => {
-    const { email, password } = req.body;
+  app.post('/auth', async (req, resp, next) => {
+    const emailFromReq = req.body.email;
+    const passwordFromReq = req.body.password;
 
-    if (!email || !password) {
-      return next(400);
+    if (emailFromReq == null || passwordFromReq == null || emailFromReq === '' || passwordFromReq === '') {
+      return resp.status(400).json({ message: 'Email and password must not be empty.' });
     }
 
+    const foundedUser = await schemeTablaUser.findOne(
+      { where: { email: emailFromReq, password: passwordFromReq } },
+    );
+
+    if (foundedUser) {
+      return resp.status(200).json({ accessToken: 123456789 });
+    }
+    resp.status(404).json({ message: 'Credentials are invalid.' });
     // TODO: autenticar a la usuarix
     next();
   });
