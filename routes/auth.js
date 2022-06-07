@@ -6,6 +6,7 @@ const {
 } = require('../models/modelScheme');
 const { secret } = config;
 
+
 /** @module auth */
 module.exports = (app, nextMain) => {
   /**
@@ -37,7 +38,15 @@ module.exports = (app, nextMain) => {
       const validPassword = await bcrypt.compare(passwordFromReq, foundedUser.password);
       if (validPassword) {
         // sgenerar token
-        return resp.status(200).json({ message: 'Valid password' });
+        const payload = {
+          email: emailFromReq,
+          roles: foundedUser.roles,
+        };
+        const token = jwt.sign(payload, config.secret, {
+          expiresIn: config.access_token_life_in_seconds,
+        });
+
+        return resp.status(200).json({ accessToken: token });
       }
       return resp.status(404).json({ message: 'Credentials are invalid.' });
     }

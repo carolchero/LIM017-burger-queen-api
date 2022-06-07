@@ -78,6 +78,8 @@ module.exports = (app, next) => {
    * @code {403} si no es ni admin
    */
   app.get('/users', requireAdmin, (req, resp) => {
+    console.log("viendo mis headers:: ", req.headers);
+    console.log("viendo header saludo:: ", req.headers['saludo']);
     schemeTablaUser.findAll()
       .then((data) => { resp.status(200).json({ users: data }); })
       .catch((error) => { resp.status(500).json({ message: error.message }); });

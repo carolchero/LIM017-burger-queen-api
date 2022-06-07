@@ -7,12 +7,12 @@ const connection = postgreConnection;
 
 // creando la tablita User con campos: id , email, password
 const schemeTablaUser = connection.define('user', {
-  id : {
+  id: {
     type: dataType.INTEGER,
     primaryKey: true,
     autoIncrement: true
   },
-  email : {
+  email: {
     type: dataType.STRING,
     validate: {
       isEmail:true
@@ -36,16 +36,16 @@ const schemeTablaUser = connection.define('user', {
 
 // creando la tablita Product con campos: id, name, price, image, type, dataEntry
 const schemeTablaProduct = connection.define('product', {
-  id : {
+  id: {
     type: dataType.INTEGER,
     primaryKey: true,
     autoIncrement: true
   },
-  name : {
+  name: {
     type: dataType.STRING,
     allowNull: false
   }, 
-  price : {
+  price: {
     type: dataType.STRING,
     allowNull: false
   },
@@ -63,7 +63,37 @@ const schemeTablaProduct = connection.define('product', {
   },
 }, { timestamps: false });
 
+// creando tabla de orders
+const schemeTablaOrder = connection.define('order', {
+  id: {
+    type: dataType.INTEGER,
+    primaryKey: true,
+    autoIncrement: true
+  },
+  client: {
+    type: dataType.STRING,
+    allowNull: false
+  },
+  status: {
+    type: dataType.STRING,
+    allowNull: false
+  },
+  dateProcessed: {
+    type: dataType.STRING,
+    allowNull: false
+  },
+  products: {
+    type: dataType.STRING,
+    allowNull: false
+  },
+  dateEntry: {
+    type: dataType.DATE,
+    defaultValue: dataType.NOW
+  },
+}, { timestamps: false });
+
 module.exports = {
   schemeTablaUser,
-  schemeTablaProduct
+  schemeTablaProduct,
+  schemeTablaOrder
 }
