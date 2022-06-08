@@ -130,7 +130,7 @@ module.exports = (app, next) => {
    * @code {401} si no hay cabecera de autenticación
    * @code {403} si ya existe usuaria con ese `email`
    */
-  app.post('/users', requireAdmin, async (req, resp, next) => {
+  app.post('/users', async (req, resp, next) => {
     const emailFromReq = req.body.email;
     const paswordFromReq = req.body.password;
     const rolesFromReq = req.body.roles;

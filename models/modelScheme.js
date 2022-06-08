@@ -1,4 +1,4 @@
-const dataType = require('sequelize');
+const { DataTypes } = require('sequelize');
 const {
   postgreConnection,
 } = require('../database/database');
@@ -8,92 +8,92 @@ const connection = postgreConnection;
 // creando la tablita User con campos: id , email, password
 const schemeTablaUser = connection.define('user', {
   id: {
-    type: dataType.INTEGER,
+    type: DataTypes.INTEGER,
     primaryKey: true,
-    autoIncrement: true
+    autoIncrement: true,
   },
   email: {
-    type: dataType.STRING,
+    type: DataTypes.STRING,
     validate: {
-      isEmail:true
+      isEmail: true,
     },
     unique: {
       args: true,
       msg: 'Email address already in use!',
     },
-    allowNull: false
+    allowNull: false,
   },
   password: {
-    type: dataType.STRING,
-    allowNull: false
+    type: DataTypes.STRING,
+    allowNull: false,
   },
   roles: {
-    type: dataType.BOOLEAN,
+    type: DataTypes.BOOLEAN,
     defaultValue: false,
-  }
+  },
 
 }, { timestamps: false });
 
 // creando la tablita Product con campos: id, name, price, image, type, dataEntry
 const schemeTablaProduct = connection.define('product', {
   id: {
-    type: dataType.INTEGER,
+    type: DataTypes.INTEGER,
     primaryKey: true,
-    autoIncrement: true
+    autoIncrement: true,
   },
   name: {
-    type: dataType.STRING,
-    allowNull: false
-  }, 
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
   price: {
-    type: dataType.STRING,
-    allowNull: false
+    type: DataTypes.STRING,
+    allowNull: false,
   },
   image: {
-    type: dataType.STRING,
-    allowNull: false
+    type: DataTypes.STRING,
+    allowNull: false,
   },
   type: {
-    type: dataType.STRING,
-    allowNull: false
+    type: DataTypes.STRING,
+    allowNull: false,
   },
   dateEntry: {
-    type: dataType.DATE,
-    defaultValue: dataType.NOW,
+    type: DataTypes.DATE,
+    defaultValue: DataTypes.NOW,
   },
 }, { timestamps: false });
 
 // creando tabla de orders
 const schemeTablaOrder = connection.define('order', {
   id: {
-    type: dataType.INTEGER,
+    type: DataTypes.INTEGER,
     primaryKey: true,
-    autoIncrement: true
+    autoIncrement: true,
   },
   client: {
-    type: dataType.STRING,
-    allowNull: false
+    type: DataTypes.STRING,
+    allowNull: false,
   },
   status: {
-    type: dataType.STRING,
-    allowNull: false
-  },
-  dateProcessed: {
-    type: dataType.STRING,
-    allowNull: false
+    type: DataTypes.STRING,
+    allowNull: false,
   },
   products: {
-    type: dataType.STRING,
-    allowNull: false
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  dateProcessed: {
+    type: DataTypes.DATE,
+    defaultValue: DataTypes.NOW,
   },
   dateEntry: {
-    type: dataType.DATE,
-    defaultValue: dataType.NOW
+    type: DataTypes.DATE,
+    defaultValue: DataTypes.NOW,
   },
 }, { timestamps: false });
 
 module.exports = {
   schemeTablaUser,
   schemeTablaProduct,
-  schemeTablaOrder
-}
+  schemeTablaOrder,
+};

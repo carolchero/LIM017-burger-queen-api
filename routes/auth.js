@@ -1,11 +1,12 @@
 const jwt = require('jsonwebtoken');
-const config = require('../config');
 const bcrypt = require('bcrypt');
+const config = require('../config');
+
 const {
   schemeTablaUser,
 } = require('../models/modelScheme');
-const { secret } = config;
 
+const { secret } = config;
 
 /** @module auth */
 module.exports = (app, nextMain) => {

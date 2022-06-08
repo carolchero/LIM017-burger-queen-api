@@ -24,10 +24,10 @@ const scheme = require('./models/modelScheme');
 
 try {
   connection.authenticate();
-  console.log('conexión establecida correctamente a la base de datos...');
+  console.log('Connection has been established successfully.');
   connection.sync({ alter: true });
 } catch (error) {
-  console.error('No se pudo conectar a la base de datos. Finalizando el backend...', error);
+  console.error('Unable to connect to the database..Ending backend:', error);
 }
 app.set('config', config);
 app.set('pkg', pkg);
