@@ -1,8 +1,11 @@
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 const config = require('../config');
+
 const {
   schemeTablaUser,
 } = require('../models/modelScheme');
+
 const { secret } = config;
 
 /** @module auth */
@@ -28,13 +31,27 @@ module.exports = (app, nextMain) => {
     }
 
     const foundedUser = await schemeTablaUser.findOne(
-      { where: { email: emailFromReq, password: passwordFromReq } },
+      { where: { email: emailFromReq } },
     );
 
     if (foundedUser) {
-      return resp.status(200).json({ accessToken: 123456789 });
+      // comparamos password desde request con password encriptado en la bd
+      const validPassword = await bcrypt.compare(passwordFromReq, foundedUser.password);
+      if (validPassword) {
+        // sgenerar token
+        const payload = {
+          email: emailFromReq,
+          roles: foundedUser.roles,
+        };
+        const token = jwt.sign(payload, config.secret, {
+          expiresIn: config.access_token_life_in_seconds,
+        });
+
+        return resp.status(200).json({ accessToken: token });
+      }
+      return resp.status(404).json({ message: 'Credentials are invalid.' });
     }
-    resp.status(404).json({ message: 'Credentials are invalid.' });
+    resp.status(404).json({ message: 'User does not exist.' });
     // TODO: autenticar a la usuarix
     next();
   });

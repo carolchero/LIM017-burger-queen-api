@@ -10,6 +10,7 @@ const {
 const {
   getUsers,
 } = require('../controller/users');
+const { password } = require('pg/lib/defaults');
 
 const initAdminUser = (app, next) => {
   const { adminEmail, adminPassword } = app.get('config');
@@ -77,6 +78,8 @@ module.exports = (app, next) => {
    * @code {403} si no es ni admin
    */
   app.get('/users', requireAdmin, (req, resp) => {
+    console.log("viendo mis headers:: ", req.headers);
+    console.log("viendo header saludo:: ", req.headers['saludo']);
     schemeTablaUser.findAll()
       .then((data) => { resp.status(200).json({ users: data }); })
       .catch((error) => { resp.status(500).json({ message: error.message }); });
@@ -127,13 +130,17 @@ module.exports = (app, next) => {
    * @code {401} si no hay cabecera de autenticación
    * @code {403} si ya existe usuaria con ese `email`
    */
-  app.post('/users', requireAdmin, (req, resp, next) => {
+  app.post('/users', async (req, resp, next) => {
     const emailFromReq = req.body.email;
     const paswordFromReq = req.body.password;
     const rolesFromReq = req.body.roles;
+    // guardar password encriptado al crear y guardar un nuevo user
+    const salt = await bcrypt.genSalt(10);
+    const encryptedPassword = await bcrypt.hash(paswordFromReq, salt);
+
     schemeTablaUser.create({
       email: emailFromReq,
-      password: paswordFromReq,
+      password: encryptedPassword,
       roles: rolesFromReq,
     }).then((data) => {
       resp.status(200).json({

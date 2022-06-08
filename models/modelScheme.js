@@ -1,4 +1,4 @@
-const dataType = require('sequelize');
+const { DataTypes } = require('sequelize');
 const {
   postgreConnection,
 } = require('../database/database');
@@ -7,63 +7,93 @@ const connection = postgreConnection;
 
 // creando la tablita User con campos: id , email, password
 const schemeTablaUser = connection.define('user', {
-  id : {
-    type: dataType.INTEGER,
+  id: {
+    type: DataTypes.INTEGER,
     primaryKey: true,
-    autoIncrement: true
+    autoIncrement: true,
   },
-  email : {
-    type: dataType.STRING,
+  email: {
+    type: DataTypes.STRING,
     validate: {
-      isEmail:true
+      isEmail: true,
     },
     unique: {
       args: true,
       msg: 'Email address already in use!',
     },
-    allowNull: false
+    allowNull: false,
   },
   password: {
-    type: dataType.STRING,
-    allowNull: false
+    type: DataTypes.STRING,
+    allowNull: false,
   },
   roles: {
-    type: dataType.BOOLEAN,
+    type: DataTypes.BOOLEAN,
     defaultValue: false,
-  }
+  },
 
 }, { timestamps: false });
 
 // creando la tablita Product con campos: id, name, price, image, type, dataEntry
 const schemeTablaProduct = connection.define('product', {
-  id : {
-    type: dataType.INTEGER,
+  id: {
+    type: DataTypes.INTEGER,
     primaryKey: true,
-    autoIncrement: true
+    autoIncrement: true,
   },
-  name : {
-    type: dataType.STRING,
-    allowNull: false
-  }, 
-  price : {
-    type: dataType.STRING,
-    allowNull: false
+  name: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  price: {
+    type: DataTypes.STRING,
+    allowNull: false,
   },
   image: {
-    type: dataType.STRING,
-    allowNull: false
+    type: DataTypes.STRING,
+    allowNull: false,
   },
   type: {
-    type: dataType.STRING,
-    allowNull: false
+    type: DataTypes.STRING,
+    allowNull: false,
   },
   dateEntry: {
-    type: dataType.DATE,
-    defaultValue: dataType.NOW,
+    type: DataTypes.DATE,
+    defaultValue: DataTypes.NOW,
+  },
+}, { timestamps: false });
+
+// creando tabla de orders
+const schemeTablaOrder = connection.define('order', {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+  },
+  client: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  status: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  products: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  dateProcessed: {
+    type: DataTypes.DATE,
+    defaultValue: DataTypes.NOW,
+  },
+  dateEntry: {
+    type: DataTypes.DATE,
+    defaultValue: DataTypes.NOW,
   },
 }, { timestamps: false });
 
 module.exports = {
   schemeTablaUser,
-  schemeTablaProduct
-}
+  schemeTablaProduct,
+  schemeTablaOrder,
+};

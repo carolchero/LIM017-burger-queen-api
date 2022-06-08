@@ -136,7 +136,31 @@ module.exports = (app, nextMain) => {
    * @code {403} si no es admin
    * @code {404} si el producto con `productId` indicado no existe
    */
-  app.put('/products/:productId', requireAdmin, (req, resp, next) => {
+  app.put('/products/:productId', requireAdmin, async (req, resp, next) => {
+    const productIdAsParm = req.params.productId;
+    const foundedProduct = await schemeTablaProduct.findByPk(productIdAsParm);
+    // actualizar los campos email password y roles
+    const newName = req.body.name;
+    const newPrice = req.body.price;
+    const newImage = req.body.image;
+    const newType = req.body.type;
+    const newDateEntry = req.body.dateEntry;
+
+    if (foundedProduct) {
+      try {
+        foundedProduct.name = newName;
+        foundedProduct.price = newPrice;
+        foundedProduct.image = newImage;
+        foundedProduct.type = newType;
+        foundedProduct.dateEntry = newDateEntry;
+        await foundedProduct.save();
+        return resp.status(200).json({ message: 'Product updated successfully.' });
+      } catch (error) {
+        return resp.status(404).json({ message: error.message });
+      }
+    } else {
+      return resp.status(404).json({ message: 'Product not found.' });
+    }
   });
 
   /**
@@ -157,7 +181,18 @@ module.exports = (app, nextMain) => {
    * @code {403} si no es ni admin
    * @code {404} si el producto con `productId` indicado no existe
    */
-  app.delete('/products/:productId', requireAdmin, (req, resp, next) => {
+  app.delete('/products/:productId', requireAdmin, async (req, resp, next) => {
+    const productIdAsParm = req.params.productId;
+    const foundedProduct = await schemeTablaProduct.findByPk(productIdAsParm);
+    if (foundedProduct) {
+      try {
+        await schemeTablaProduct.destroy({ where: { id: productIdAsParm } });
+        return resp.status(200).json({ message: 'Product was deleted' });
+      } catch (error) {
+        resp.status(404).json({ message: 'Product was not deleted' });
+      }
+    }
+    return resp.status(404).json({ message: 'Product not found.' });
   });
 
   nextMain();
