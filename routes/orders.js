@@ -105,7 +105,9 @@ module.exports = (app, nextMain) => {
     const statusFromReq = req.body.status;
     const productsFromReq = req.body.products;
     const dataEntryFromReq = req.body.dateEntry;
+    const userIdFromReq = req.body.userId;
     schemeTablaOrder.create({
+      userId: userIdFromReq,
       client: clientFromReq,
       status: statusFromReq,
       products: productsFromReq,

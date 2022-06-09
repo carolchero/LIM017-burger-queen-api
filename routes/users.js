@@ -80,6 +80,7 @@ module.exports = (app, next) => {
   app.get('/users', requireAdmin, (req, resp) => {
     console.log("viendo mis headers:: ", req.headers);
     console.log("viendo header saludo:: ", req.headers['saludo']);
+    // findAll metodo que recorre filas y retorna los arreglos
     schemeTablaUser.findAll()
       .then((data) => { resp.status(200).json({ users: data }); })
       .catch((error) => { resp.status(500).json({ message: error.message }); });
@@ -130,7 +131,7 @@ module.exports = (app, next) => {
    * @code {401} si no hay cabecera de autenticación
    * @code {403} si ya existe usuaria con ese `email`
    */
-  app.post('/users', async (req, resp, next) => {
+  app.post('/users', requireAdmin, async (req, resp, next) => {
     const emailFromReq = req.body.email;
     const paswordFromReq = req.body.password;
     const rolesFromReq = req.body.roles;
@@ -218,10 +219,11 @@ module.exports = (app, next) => {
     const foundedUser = await schemeTablaUser.findByPk(userIdAsParm);
     if (foundedUser) {
       try {
+        // metodo destroy elimina/ en where se especifica el id
         await schemeTablaUser.destroy({ where: { id: userIdAsParm } });
         return resp.status(200).json({ message: 'User was deleted' });
       } catch (error) {
-        resp.status(404).json({ message: 'User was not deleted' });
+        return resp.status(404).json({ message: 'User was not deleted' });
       }
     }
     return resp.status(404).json({ message: 'User not found.' });

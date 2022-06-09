@@ -10,7 +10,7 @@ const pkg = require('./package.json');
 // const pgClient = new pg.Client({ connectionString: config.dbUrl });
 
 const { port, dbUrl, secret } = config;
-const app = express();
+const app = express(); // usando funcion de express para crear rutas
 
 // TODO: Conexión a la Base de Datos (MongoDB o MySQL)
 const {
@@ -25,7 +25,8 @@ const scheme = require('./models/modelScheme');
 try {
   connection.authenticate();
   console.log('Connection has been established successfully.');
-  connection.sync({ alter: true });
+  connection.sync({ force: true }); // sincronizacion con base de datos
+  // force(elimina anteriores) alter: añade cambios
 } catch (error) {
   console.error('Unable to connect to the database..Ending backend:', error);
 }
@@ -34,7 +35,7 @@ app.set('pkg', pkg);
 
 // parse application/x-www-form-urlencoded
 app.use(express.urlencoded({ extended: false }));
-app.use(express.json());
+app.use(express.json()); // para que el servidor interprete formato json
 app.use(authMiddleware(secret));
 
 // Registrar rutas

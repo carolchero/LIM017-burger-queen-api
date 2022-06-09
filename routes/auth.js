@@ -38,7 +38,7 @@ module.exports = (app, nextMain) => {
       // comparamos password desde request con password encriptado en la bd
       const validPassword = await bcrypt.compare(passwordFromReq, foundedUser.password);
       if (validPassword) {
-        // sgenerar token
+        // generar token
         const payload = {
           email: emailFromReq,
           roles: foundedUser.roles,
