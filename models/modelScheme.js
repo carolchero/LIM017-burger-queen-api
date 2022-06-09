@@ -8,7 +8,7 @@ const connection = postgreConnection;
 // creando la tablita User con campos: id , email, password
 const schemeTablaUser = connection.define('user', {
   id: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.INTEGER, // tipo de dato
     primaryKey: true,
     autoIncrement: true,
   },
@@ -29,7 +29,7 @@ const schemeTablaUser = connection.define('user', {
   },
   roles: {
     type: DataTypes.BOOLEAN,
-    defaultValue: false,
+    defaultValue: false, // valor por defecto
   },
 
 }, { timestamps: false });
@@ -50,7 +50,7 @@ const schemeTablaProduct = connection.define('product', {
     allowNull: false,
   },
   image: {
-    type: DataTypes.STRING,
+    type: DataTypes.TEXT,
     allowNull: false,
   },
   type: {
@@ -92,8 +92,25 @@ const schemeTablaOrder = connection.define('order', {
   },
 }, { timestamps: false });
 
+// el usuario puede tener muchas ordenes
+schemeTablaUser.hasMany(schemeTablaOrder, {
+  foreingKey: 'userId',
+  sourceKey: 'id',
+}/* { foreignKey: { allowNull: false }} */);
+
+// la tabla order pertenece a usuario
+schemeTablaOrder.belongsTo(schemeTablaUser, {
+  foreingKey: 'userId',
+  targetId: 'id',
+/*   foreingKey: {
+    name: 'idUser',
+    allowNull: false,
+  }, */
+});
+
 module.exports = {
   schemeTablaUser,
   schemeTablaProduct,
   schemeTablaOrder,
 };
+// Task.belongsTo(User, { foreignKey: { allowNull: false }, onDelete: 'CASCADE' })
