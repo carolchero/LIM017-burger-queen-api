@@ -3,7 +3,7 @@ const {
 } = require('../middleware/auth');
 
 const {
-  schemeTablaOrder,
+  schemeTablaOrder, schemeTablaProduct, schemeTablaOrdersProduct, schemeTablaUser
 } = require('../models/modelScheme');
 
 /** @module orders */
@@ -100,29 +100,59 @@ module.exports = (app, nextMain) => {
    * @code {400} no se indica `userId` o se intenta crear una orden sin productos
    * @code {401} si no hay cabecera de autenticación
    */
-  app.post('/orders', requireAuth, (req, resp, next) => {
+  app.post('/orders', requireAuth, async (req, resp, next) => {
+    const userIdFromReq = req.body.userId;
     const clientFromReq = req.body.client;
     const statusFromReq = req.body.status;
-    const productsFromReq = req.body.products;
-    const dataEntryFromReq = req.body.dateEntry;
-    const userIdFromReq = req.body.userId;
+    const listOfProducts = req.body.products;
+
+    //para crear un orderProducts primero necesitamos una orden!! entonces la creamos
     schemeTablaOrder.create({
       userId: userIdFromReq,
       client: clientFromReq,
       status: statusFromReq,
-      products: productsFromReq,
-      dataEntry: dataEntryFromReq,
-    }).then((data) => {
-      resp.status(200).json({
-        id: data.dataValues.id,
-        client: data.dataValues.client,
-        status: data.dataValues.status,
-        products: data.dataValues.products,
-        dateProcessed: data.dataValues.dateProcessed,
-        dateEntry: data.dataValues.dateEntry,
-      });
-    })
-      .catch((error) => { resp.status(500).json({ message: error.message }); });
+    }).then(createdOrder => {
+      for (item of listOfProducts) {
+        //aqui para insertar un orderProducts necesitamos una orderId, un productId y una cantidad.
+        schemeTablaOrdersProduct.create({
+          orderId: createdOrder.id, 
+          productId : item.productid,
+          quantity: item.qty
+        });    
+      }
+
+      schemeTablaOrder.findByPk(createdOrder.id, {
+        include: [{model: schemeTablaOrdersProduct, include: [schemeTablaProduct]}, schemeTablaUser]
+      }).then(order => {
+        order ? resp.status(200).json({order}) : resp.status(404)
+      })
+    });
+
+    /*const foundedProducts = await schemeTablaProduct.findAll({
+      where: {
+        userId: userIdFromReq,
+      },
+    });
+    console.log('foundedProducts');
+    console.log(foundedProducts);
+    console.log('foundedProducts');
+
+      schemeTablaOrder.create({
+        userId: userIdFromReq,
+        client: clientFromReq,
+        status: statusFromReq,
+      }).then((data) => {
+        resp.status(200).json({
+          id: data.dataValues.id,
+          userId: data.dataValues.userId,
+          client: data.dataValues.client,
+          products: data.dataValues.products,
+          status: data.dataValues.status,
+          dateEntry: data.dataValues.dateEntry,
+        });
+      })
+        .catch((error) => { resp.status(500).json({ message: error.message }); });
+        */
   });
   /**
    * @name PUT /orders

@@ -46,11 +46,11 @@ const schemeTablaProduct = connection.define('product', {
     allowNull: false,
   },
   price: {
-    type: DataTypes.STRING,
+    type: DataTypes.DECIMAL,
     allowNull: false,
   },
   image: {
-    type: DataTypes.TEXT,
+    type: DataTypes.STRING,
     allowNull: false,
   },
   type: {
@@ -78,22 +78,37 @@ const schemeTablaOrder = connection.define('order', {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  products: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-  dateProcessed: {
-    type: DataTypes.DATE,
-    defaultValue: DataTypes.NOW,
-  },
   dateEntry: {
     type: DataTypes.DATE,
     defaultValue: DataTypes.NOW,
   },
 }, { timestamps: false });
 
+
+const schemeTablaOrdersProduct = connection.define('ordersproduct', {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+  },
+  orderId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
+  productId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
+  quantity: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
+
+}, { timestamps: false });
+
+
 // el usuario puede tener muchas ordenes
-schemeTablaUser.hasMany(schemeTablaOrder, {
+schemeTablaUser.hasOne(schemeTablaOrder, {
   foreingKey: 'userId',
   sourceKey: 'id',
 }/* { foreignKey: { allowNull: false }} */);
@@ -108,9 +123,47 @@ schemeTablaOrder.belongsTo(schemeTablaUser, {
   }, */
 });
 
+//insert data por defecto
+connection.sync({ force: true }).then(()=> {
+  schemeTablaUser.create({
+    email: 'admiDefault@gmail.com',
+    password: '123456',
+    roles: true});
+
+    schemeTablaProduct.create({
+      name: 'mango',
+      price: 10.00,
+      image: 'http://image.fake1',
+      type: 'DESAYUNO',
+    });
+
+    schemeTablaProduct.create({
+      name: 'pera',
+      price: 12.00,
+      image: 'http://image.fake2',
+      type: 'DESAYUNO',
+    });
+
+    schemeTablaProduct.create({
+      name: 'nabo',
+      price: 5.00,
+      image: 'http://image.fake3',
+      type: 'DESAYUNO',
+    });
+
+});
+
+schemeTablaOrdersProduct.belongsTo(schemeTablaProduct, { foreingKey: 'productId', });
+schemeTablaProduct.hasMany(schemeTablaOrdersProduct, { foreingKey: 'productId', });
+
+schemeTablaOrdersProduct.belongsTo(schemeTablaOrder, { foreingKey: 'orderId', });
+schemeTablaOrder.hasMany(schemeTablaOrdersProduct, { foreingKey: 'orderId', });
+
+
 module.exports = {
   schemeTablaUser,
   schemeTablaProduct,
   schemeTablaOrder,
+  schemeTablaOrdersProduct,
 };
 // Task.belongsTo(User, { foreignKey: { allowNull: false }, onDelete: 'CASCADE' })

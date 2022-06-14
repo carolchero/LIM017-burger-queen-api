@@ -6,8 +6,6 @@ const {
   schemeTablaUser,
 } = require('../models/modelScheme');
 
-const { secret } = config;
-
 /** @module auth */
 module.exports = (app, nextMain) => {
   /**
@@ -39,10 +37,12 @@ module.exports = (app, nextMain) => {
       const validPassword = await bcrypt.compare(passwordFromReq, foundedUser.password);
       if (validPassword) {
         // generar token
+        // datos para token
         const payload = {
           email: emailFromReq,
           roles: foundedUser.roles,
         };
+        // jwv recibe la data a guardar, palabras clave y el tiempo de duración.
         const token = jwt.sign(payload, config.secret, {
           expiresIn: config.access_token_life_in_seconds,
         });
