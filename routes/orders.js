@@ -2,6 +2,10 @@ const {
   requireAuth,
 } = require('../middleware/auth');
 
+const {
+  schemeTablaOrder, schemeTablaProduct, schemeTablaOrdersProduct, schemeTablaUser
+} = require('../models/modelScheme');
+
 /** @module orders */
 module.exports = (app, nextMain) => {
   /**
@@ -30,7 +34,13 @@ module.exports = (app, nextMain) => {
    * @code {200} si la autenticación es correcta
    * @code {401} si no hay cabecera de autenticación
    */
-  app.get('/orders', requireAuth, (req, resp, next) => {
+  app.get('/orders/:_page/:_limit', requireAuth, (req, resp, next) => {
+    const pageAsParm = req.params._page;
+    const limitAsParm = req.params._limit;
+
+    schemeTablaOrder.findAll()
+      .then((data) => { resp.status(200).json({ orders: data }); })
+      .catch((error) => { resp.status(500).json({ message: error.message }); });
   });
 
   /**
@@ -54,7 +64,14 @@ module.exports = (app, nextMain) => {
    * @code {401} si no hay cabecera de autenticación
    * @code {404} si la orden con `orderId` indicado no existe
    */
-  app.get('/orders/:orderId', requireAuth, (req, resp, next) => {
+  app.get('/orders/:orderId', requireAuth, async (req, resp, next) => {
+    const orderIdasParm = req.params.orderId;
+
+    const foundedOrder = await schemeTablaOrder.findByPk(orderIdasParm);
+    if (foundedOrder) {
+      return resp.status(200).json({ foundedOrder });
+    }
+    resp.status(404).json({ message: 'Product not found.' });
   });
 
   /**
@@ -83,9 +100,60 @@ module.exports = (app, nextMain) => {
    * @code {400} no se indica `userId` o se intenta crear una orden sin productos
    * @code {401} si no hay cabecera de autenticación
    */
-  app.post('/orders', requireAuth, (req, resp, next) => {
-  });
+  app.post('/orders', requireAuth, async (req, resp, next) => {
+    const userIdFromReq = req.body.userId;
+    const clientFromReq = req.body.client;
+    const statusFromReq = req.body.status;
+    const listOfProducts = req.body.products;
 
+    //para crear un orderProducts primero necesitamos una orden!! entonces la creamos
+    schemeTablaOrder.create({
+      userId: userIdFromReq,
+      client: clientFromReq,
+      status: statusFromReq,
+    }).then(createdOrder => {
+      for (item of listOfProducts) {
+        //aqui para insertar un orderProducts necesitamos una orderId, un productId y una cantidad.
+        schemeTablaOrdersProduct.create({
+          orderId: createdOrder.id, 
+          productId : item.productid,
+          quantity: item.qty
+        });    
+      }
+
+      schemeTablaOrder.findByPk(createdOrder.id, {
+        include: [{model: schemeTablaOrdersProduct, include: [schemeTablaProduct]}, schemeTablaUser]
+      }).then(order => {
+        order ? resp.status(200).json({order}) : resp.status(404)
+      })
+    });
+
+    /*const foundedProducts = await schemeTablaProduct.findAll({
+      where: {
+        userId: userIdFromReq,
+      },
+    });
+    console.log('foundedProducts');
+    console.log(foundedProducts);
+    console.log('foundedProducts');
+
+      schemeTablaOrder.create({
+        userId: userIdFromReq,
+        client: clientFromReq,
+        status: statusFromReq,
+      }).then((data) => {
+        resp.status(200).json({
+          id: data.dataValues.id,
+          userId: data.dataValues.userId,
+          client: data.dataValues.client,
+          products: data.dataValues.products,
+          status: data.dataValues.status,
+          dateEntry: data.dataValues.dateEntry,
+        });
+      })
+        .catch((error) => { resp.status(500).json({ message: error.message }); });
+        */
+  });
   /**
    * @name PUT /orders
    * @description Modifica una orden
@@ -114,7 +182,31 @@ module.exports = (app, nextMain) => {
    * @code {401} si no hay cabecera de autenticación
    * @code {404} si la orderId con `orderId` indicado no existe
    */
-  app.put('/orders/:orderId', requireAuth, (req, resp, next) => {
+  app.put('/orders/:orderId', requireAuth, async (req, resp, next) => {
+    const orderIdAsParam = req.params.orderId;
+    const foundedOrder = await schemeTablaOrder.findByPk(orderIdAsParam);
+    // actualizar los campos email password y roles
+    const newClient = req.body.client;
+    const newStatus = req.body.status;
+    const newProducts = req.body.products;
+    const newdateProcessed = req.body.dateProcessed;
+    const newDateEntry = req.body.dateEntry;
+
+    if (foundedOrder) {
+      try {
+        foundedOrder.client = newClient;
+        foundedOrder.status = newStatus;
+        foundedOrder.products = newProducts;
+        foundedOrder.dateProcessed = newdateProcessed;
+        foundedOrder.dateEntry = newDateEntry;
+        await foundedOrder.save();
+        return resp.status(200).json({ message: 'Order updated successfully.' });
+      } catch (error) {
+        return resp.status(404).json({ message: error.message });
+      }
+    } else {
+      return resp.status(404).json({ message: 'Order not found.' });
+    }
   });
 
   /**
@@ -138,7 +230,18 @@ module.exports = (app, nextMain) => {
    * @code {401} si no hay cabecera de autenticación
    * @code {404} si el producto con `orderId` indicado no existe
    */
-  app.delete('/orders/:orderId', requireAuth, (req, resp, next) => {
+  app.delete('/orders/:orderId', requireAuth, async (req, resp, next) => {
+    const orderIdAsParm = req.params.orderId;
+    const foundedOrder = await schemeTablaOrder.findByPk(orderIdAsParm);
+    if (foundedOrder) {
+      try {
+        await schemeTablaOrder.destroy({ where: { id: orderIdAsParm } });
+        return resp.status(200).json({ message: 'Order was deleted' });
+      } catch (error) {
+        resp.status(404).json({ message: 'Order was not deleted' });
+      }
+    }
+    return resp.status(404).json({ message: 'Order not found.' });
   });
 
   nextMain();

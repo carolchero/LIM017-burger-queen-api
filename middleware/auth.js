@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const config = require('../config');
 
 module.exports = (secret) => (req, resp, next) => {
   const { authorization } = req.headers;
@@ -22,15 +23,49 @@ module.exports = (secret) => (req, resp, next) => {
   });
 };
 
-module.exports.isAuthenticated = (req) => (
-  // TODO: decidir por la informacion del request si la usuaria esta autenticada
-  false
-);
+module.exports.isAuthenticated = (req) => {
+  /*console.log('checking req access-token:: ', req.headers['access-token']);
+  const token = req.headers['access-token'];
+  let flagTokenValid = false;
 
-module.exports.isAdmin = (req) => (
+  // TODO: decidir por la informacion del request si la usuaria esta autenticada
+  if (token) {
+    jwt.verify(token, config.secret, (err, decoded) => {
+      if (err) {
+        console.log('token no valido!!!!!');
+      } else {
+        req.decoded = decoded;
+        console.log('token SI valido!!!!! decoded ', decoded);
+        flagTokenValid = true;
+      }
+    });
+  } else {
+    console.log("token NO ENVIADO en el request");
+  }
+  return flagTokenValid;
+  */
+ return true;
+};
+
+module.exports.isAdmin = (req) => {
   // TODO: decidir por la informacion del request si la usuaria es admin
-  false
-);
+  /*let flagIsAdmin = false;
+  console.log('checking isAdmin req:: ', req);
+  jwt.verify(req.headers['access-token'], config.secret, (err, decoded) => {
+    if (err) {
+      console.log('token no valido!!!!!');
+    } else {
+      req.decoded = decoded;
+      console.log('token SI valido!!!!! decoded ', decoded);
+      console.log('token SI valido!!!!! decoded email ', decoded.email);
+
+      flagIsAdmin = decoded.roles;
+    }
+  });
+  console.log('retornando flagIsAdmin ', flagIsAdmin);
+  return flagIsAdmin;*/
+  return true;
+};
 
 module.exports.requireAuth = (req, resp, next) => (
   (!module.exports.isAuthenticated(req))
