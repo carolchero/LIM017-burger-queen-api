@@ -123,34 +123,33 @@ schemeTablaOrder.belongsTo(schemeTablaUser, {
   }, */
 });
 
-//insert data por defecto
+// insert data por defecto
 connection.sync({ force: true }).then(()=> {
   schemeTablaUser.create({
     email: 'admiDefault@gmail.com',
     password: '123456',
     roles: true});
 
-    schemeTablaProduct.create({
-      name: 'mango',
-      price: 10.00,
-      image: 'http://image.fake1',
-      type: 'DESAYUNO',
-    });
+  schemeTablaProduct.create({
+    name: 'mango',
+    price: 10.00,
+    image: 'http://image.fake1',
+    type: 'DESAYUNO',
+  });
 
-    schemeTablaProduct.create({
-      name: 'pera',
-      price: 12.00,
-      image: 'http://image.fake2',
-      type: 'DESAYUNO',
-    });
+  schemeTablaProduct.create({
+    name: 'pera',
+    price: 12.00,
+    image: 'http://image.fake2',
+    type: 'DESAYUNO',
+  });
 
-    schemeTablaProduct.create({
-      name: 'nabo',
-      price: 5.00,
-      image: 'http://image.fake3',
-      type: 'DESAYUNO',
-    });
-
+  schemeTablaProduct.create({
+    name: 'nabo',
+    price: 5.00,
+    image: 'http://image.fake3',
+    type: 'DESAYUNO',
+  });
 });
 
 schemeTablaOrdersProduct.belongsTo(schemeTablaProduct, { foreingKey: 'productId', });
@@ -158,7 +157,6 @@ schemeTablaProduct.hasMany(schemeTablaOrdersProduct, { foreingKey: 'productId', 
 
 schemeTablaOrdersProduct.belongsTo(schemeTablaOrder, { foreingKey: 'orderId', });
 schemeTablaOrder.hasMany(schemeTablaOrdersProduct, { foreingKey: 'orderId', });
-
 
 module.exports = {
   schemeTablaUser,
