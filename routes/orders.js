@@ -1,9 +1,11 @@
+/* eslint-disable no-unused-expressions */
+/* eslint-disable no-restricted-syntax */
 const {
   requireAuth,
 } = require('../middleware/auth');
 
 const {
-  schemeTablaOrder,
+  schemeTablaOrder, schemeTablaProduct, schemeTablaOrdersProduct,
 } = require('../models/modelScheme');
 
 /** @module orders */
@@ -38,7 +40,10 @@ module.exports = (app, nextMain) => {
     const pageAsParm = req.params._page;
     const limitAsParm = req.params._limit;
 
-    schemeTablaOrder.findAll()
+    schemeTablaOrder.findAll({
+      limit: limitAsParm,
+      offset: pageAsParm * limitAsParm,
+    })
       .then((data) => { resp.status(200).json({ orders: data }); })
       .catch((error) => { resp.status(500).json({ message: error.message }); });
   });
@@ -74,6 +79,51 @@ module.exports = (app, nextMain) => {
     resp.status(404).json({ message: 'Product not found.' });
   });
 
+  app.get('/getAllOrders', requireAuth, (req, resp, next) => {
+    schemeTablaOrder.findAll({
+      include: [{
+        model: schemeTablaOrdersProduct,
+        include: [schemeTablaProduct],
+      }],
+    })
+      .then((order) => resp.send(order));
+  });
+
+  app.get('/getAllOrders/:_page/:_limit', requireAuth, (req, resp, next) => {
+    const pageAsParm = req.params._page;
+    const limitAsParm = req.params._limit;
+
+    schemeTablaOrder.findAll({
+      limit: limitAsParm,
+      offset: pageAsParm * limitAsParm,
+      include: [{
+        model: schemeTablaOrdersProduct,
+        include: [schemeTablaProduct],
+      }],
+    })
+      .then((order) => resp.send(order));
+  });
+
+  app.get('/getAllOrders/:_idOrden', requireAuth, (req, resp, next) => {
+    const pageAsParm = req.params._idOrden;
+    schemeTablaOrder.findByPk(pageAsParm, {
+      include: [{
+        model: schemeTablaOrdersProduct, include: [schemeTablaProduct],
+      }],
+    }).then((order) => {
+      if (order) {
+        resp.status(200).json({
+          id: order.id,
+          client: order.client,
+          products: order.ordersproducts,
+          status: order.status,
+          dateEntry: order.dateEntry,
+        });
+      }
+      resp.status(404);
+    });
+  });
+
   /**
    * @name POST /orders
    * @description Crea una nueva orden
@@ -100,29 +150,31 @@ module.exports = (app, nextMain) => {
    * @code {400} no se indica `userId` o se intenta crear una orden sin productos
    * @code {401} si no hay cabecera de autenticación
    */
-  app.post('/orders', requireAuth, (req, resp, next) => {
+  app.post('/orders', requireAuth, async (req, resp, next) => {
+    const userIdFromReq = req.body.userId;
     const clientFromReq = req.body.client;
     const statusFromReq = req.body.status;
-    const productsFromReq = req.body.products;
-    const dataEntryFromReq = req.body.dateEntry;
-    const userIdFromReq = req.body.userId;
+    const listOfProducts = req.body.products;
+
+    // para crear un orderProducts primero necesitamos una orden!! entonces la creamos
     schemeTablaOrder.create({
       userId: userIdFromReq,
       client: clientFromReq,
       status: statusFromReq,
-      products: productsFromReq,
-      dataEntry: dataEntryFromReq,
-    }).then((data) => {
-      resp.status(200).json({
-        id: data.dataValues.id,
-        client: data.dataValues.client,
-        status: data.dataValues.status,
-        products: data.dataValues.products,
-        dateProcessed: data.dataValues.dateProcessed,
-        dateEntry: data.dataValues.dateEntry,
+    }).then((createdOrder) => {
+      for (const item of listOfProducts) {
+        // aqui para insertar un orderProducts necesitamos una orderId, un productId y una cantidad.
+        schemeTablaOrdersProduct.create({
+          orderId: createdOrder.id,
+          productId: item.productid,
+          quantity: item.qty,
+        });
+      }
+      schemeTablaOrder.findByPk(createdOrder.id, {
+      }).then((order) => {
+        order ? resp.status(200).json({ order }) : resp.status(404);
       });
-    })
-      .catch((error) => { resp.status(500).json({ message: error.message }); });
+    });
   });
   /**
    * @name PUT /orders

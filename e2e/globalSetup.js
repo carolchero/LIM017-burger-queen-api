@@ -81,7 +81,7 @@ const checkAdminCredentials = () => fetch('/auth', {
 
     return resp.json();
   })
-  .then(({ token }) => Object.assign(__e2e, { adminToken: token }));
+  .then(({ accessToken }) => Object.assign(__e2e, { adminToken: accessToken }));
 
 const waitForServerToBeReady = (retries = 10) => new Promise((resolve, reject) => {
   if (!retries) {
@@ -96,7 +96,7 @@ const waitForServerToBeReady = (retries = 10) => new Promise((resolve, reject) =
           : resolve()
       ))
       .catch(() => waitForServerToBeReady(retries - 1).then(resolve, reject));
-  }, 1000);
+  }, 2000);
 });
 
 module.exports = () => new Promise((resolve, reject) => {
@@ -108,7 +108,7 @@ module.exports = () => new Promise((resolve, reject) => {
   // TODO: Configurar DB de tests
 
   console.info('Staring local server...');
-  const child = spawn('npm', ['start', process.env.PORT || 8888], {
+  const child = spawn(/^win/.test(process.platform) ? 'npm.cmd' : 'npm', ['start', process.env.PORT || 8888], {
     cwd: path.resolve(__dirname, '../'),
     stdio: ['ignore', 'pipe', 'pipe'],
   });
