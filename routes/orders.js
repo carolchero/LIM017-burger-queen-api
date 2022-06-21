@@ -40,7 +40,10 @@ module.exports = (app, nextMain) => {
     const pageAsParm = req.params._page;
     const limitAsParm = req.params._limit;
 
-    schemeTablaOrder.findAll()
+    schemeTablaOrder.findAll({
+      limit: limitAsParm,
+      offset: pageAsParm * limitAsParm,
+    })
       .then((data) => { resp.status(200).json({ orders: data }); })
       .catch((error) => { resp.status(500).json({ message: error.message }); });
   });
