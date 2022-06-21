@@ -89,6 +89,21 @@ module.exports = (app, nextMain) => {
       .then((order) => resp.send(order));
   });
 
+  app.get('/getAllOrders/:_page/:_limit', requireAuth, (req, resp, next) => {
+    const pageAsParm = req.params._page;
+    const limitAsParm = req.params._limit;
+
+    schemeTablaOrder.findAll({
+      limit: limitAsParm,
+      offset: pageAsParm * limitAsParm,
+      include: [{
+        model: schemeTablaOrdersProduct,
+        include: [schemeTablaProduct],
+      }],
+    })
+      .then((order) => resp.send(order));
+  });
+
   app.get('/getAllOrders/:_idOrden', requireAuth, (req, resp, next) => {
     const pageAsParm = req.params._idOrden;
     schemeTablaOrder.findByPk(pageAsParm, {
