@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
-const {
+/*const {
   schemeTablaUser,
-} = require('../models/modelScheme');
+} = require('../models/modelScheme');*/
 const {
   requireAuth,
   requireAdmin,
