@@ -5,6 +5,7 @@ const postgreConnection = new Sequelize('apiburguerv1', 'postgres', '123456789',
   host: 'localhost', // lugar donde esta la base de datos
   port: 5433,
   dialect: 'postgres',
+  logging: false,
 });
 
 module.exports = {

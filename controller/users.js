@@ -1,11 +1,12 @@
+/* eslint-disable indent */
+/* eslint-disable no-console */
 const {
   schemeTablaUser,
 } = require('../models/modelScheme');
 
-
 module.exports = {
   getUsers: (req, resp, next) => {
-    console.log('access-token: ', req.headers['access-token']);
+   console.log('access-token: ', req.headers['access-token']);
     // findAll metodo que recorre filas y retorna los arreglos
     schemeTablaUser.findAll()
       .then((data) => {
@@ -25,6 +26,4 @@ module.exports = {
       .catch((error) => { resp.status(500).json({ error: error.message }); });
   },
 
-
-  
 };
