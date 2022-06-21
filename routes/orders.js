@@ -40,7 +40,10 @@ module.exports = (app, nextMain) => {
     const pageAsParm = req.params._page;
     const limitAsParm = req.params._limit;
 
-    schemeTablaOrder.findAll()
+    schemeTablaOrder.findAll({
+      limit: limitAsParm,
+      offset: pageAsParm * limitAsParm,
+    })
       .then((data) => { resp.status(200).json({ orders: data }); })
       .catch((error) => { resp.status(500).json({ message: error.message }); });
   });
@@ -78,6 +81,21 @@ module.exports = (app, nextMain) => {
 
   app.get('/getAllOrders', requireAuth, (req, resp, next) => {
     schemeTablaOrder.findAll({
+      include: [{
+        model: schemeTablaOrdersProduct,
+        include: [schemeTablaProduct],
+      }],
+    })
+      .then((order) => resp.send(order));
+  });
+
+  app.get('/getAllOrders/:_page/:_limit', requireAuth, (req, resp, next) => {
+    const pageAsParm = req.params._page;
+    const limitAsParm = req.params._limit;
+
+    schemeTablaOrder.findAll({
+      limit: limitAsParm,
+      offset: pageAsParm * limitAsParm,
       include: [{
         model: schemeTablaOrdersProduct,
         include: [schemeTablaProduct],

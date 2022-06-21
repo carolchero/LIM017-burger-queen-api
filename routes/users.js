@@ -188,7 +188,9 @@ module.exports = (app, next) => {
     const newEmail = req.body.email;
     const newPassword = req.body.password;
     const newRoles = req.body.roles;
-
+    if (newEmail == null || newPassword == null || newEmail === '' || newPassword === '') {
+      return resp.status(400).json({ message: 'Email and password must not be empty.' });
+    }
     if (foundedUser) {
       try {
         foundedUser.email = newEmail;
