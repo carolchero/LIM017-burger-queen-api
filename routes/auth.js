@@ -1,14 +1,6 @@
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
-const config = require('../config');
-
 const {
-  requireAuth,
-} = require('../middleware/auth');
-
-const {
-  foundedUser,
-} = require('../controller/auth');
+  postAuth,
+} = require('../controller/orders');
 
 /** @module auth */
 module.exports = (app, nextMain) => {
@@ -24,5 +16,8 @@ module.exports = (app, nextMain) => {
    * @code {400} si no se proveen `email` o `password` o ninguno de los dos
    * @auth No requiere autenticación
    */
-  app.post('/auth', requireAuth);
+
+  app.post('/auth', postAuth);
+
+  return nextMain();
 };
