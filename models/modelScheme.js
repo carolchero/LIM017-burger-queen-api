@@ -122,7 +122,7 @@ schemeTablaOrder.belongsTo(schemeTablaUser, {
 });
 
 // insert data por defecto
-connection.sync({ force: true }).then(() => {
+connection.sync({ alter: true }).then(() => {
   schemeTablaUser.create({
     email: 'admiDefault@gmail.com',
     password: '$2b$10$bhOcgMtXGtqiwdMOh1EZHuydzdr0tcwT/bgjVONRzrzmPZ5MRMdKC',
