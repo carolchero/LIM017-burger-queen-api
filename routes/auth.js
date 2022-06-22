@@ -1,6 +1,6 @@
 const {
   postAuth,
-} = require('../controller/orders');
+} = require('../controller/auth');
 
 /** @module auth */
 module.exports = (app, nextMain) => {
