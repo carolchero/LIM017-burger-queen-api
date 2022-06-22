@@ -7,9 +7,6 @@ const {
   requireAdmin,
 } = require('../middleware/auth');
 
-const {
-  getUsers,
-} = require('../controller/users');
 const { password } = require('pg/lib/defaults');
 
 const initAdminUser = (app, next) => {
