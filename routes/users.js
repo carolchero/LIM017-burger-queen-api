@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
-const {
+/*const {
   schemeTablaUser,
-} = require('../models/modelScheme');
+} = require('../models/modelScheme');*/
 const {
   requireAuth,
   requireAdmin,
@@ -10,6 +10,7 @@ const {
 const {
   getUsers,
 } = require('../controller/users');
+
 const { password } = require('pg/lib/defaults');
 
 const initAdminUser = (app, next) => {
