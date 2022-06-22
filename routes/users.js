@@ -1,7 +1,5 @@
 const bcrypt = require('bcrypt');
-/*const {
-  schemeTablaUser,
-} = require('../models/modelScheme');*/
+
 const {
   requireAuth,
   requireAdmin,
@@ -9,8 +7,11 @@ const {
 
 const {
   getUsers,
+  getUserId,
+  postUsers,
+  putUsers,
+  deleteUsers,
 } = require('../controller/users');
-
 const { password } = require('pg/lib/defaults');
 
 const initAdminUser = (app, next) => {
@@ -96,22 +97,7 @@ module.exports = (app, next) => {
    * @code {403} si no es ni admin o la misma usuaria
    * @code {404} si la usuaria solicitada no existe
    */
-  app.get('/users/:uid', requireAuth, async (req, resp) => {
-    const userIdAsParm = req.params.uid;
-
-    const foundedUser = await schemeTablaUser.findByPk(userIdAsParm);
-    if (foundedUser) {
-      return resp.status(200).json({
-        id: foundedUser.id,
-        email: foundedUser.email,
-        password: foundedUser.password,
-        roles: {
-          admin: foundedUser.roles,
-        },
-      });
-    }
-    return resp.status(404).json({ error: 'User not found.' });
-  });
+  app.get('/users/:uid', requireAuth, getUserId);
 
   /**
    * @name POST /users
@@ -132,33 +118,7 @@ module.exports = (app, next) => {
    * @code {401} si no hay cabecera de autenticación
    * @code {403} si ya existe usuaria con ese `email`
    */
-  app.post('/users', async (req, resp, next) => {
-    const emailFromReq = req.body.email;
-    const passwordFromReq = req.body.password;
-    const rolesFromReq = req.body.roles;
-    if (emailFromReq == null || passwordFromReq == null || emailFromReq === '' || passwordFromReq === '') {
-      return resp.status(400).json({ message: 'Email and password must not be empty.' });
-    }
-    // guardar password encriptado al crear y guardar un nuevo user
-    const salt = await bcrypt.genSalt(10);
-    const encryptedPassword = await bcrypt.hash(passwordFromReq, salt);
-
-    schemeTablaUser.create({
-      email: emailFromReq,
-      password: encryptedPassword,
-      roles: rolesFromReq,
-    }).then((data) => {
-      resp.status(200).json({
-        id: data.dataValues.id,
-        email: data.dataValues.email,
-        password: data.dataValues.password,
-        roles: {
-          admin: data.dataValues.roles,
-        },
-      });
-    })
-      .catch((error) => { resp.status(403).json({ error: error.message }); });
-  });
+  app.post('/users', postUsers);
 
   /**
    * @name PUT /users
@@ -182,38 +142,7 @@ module.exports = (app, next) => {
    * @code {403} una usuaria no admin intenta de modificar sus `roles`
    * @code {404} si la usuaria solicitada no existe
    */
-  app.put('/users/:uid', requireAdmin, async (req, resp, next) => {
-    const userIdAsParm = req.params.uid; // id
-    const foundedUser = await schemeTablaUser.findByPk(userIdAsParm);
-    // actualizar los campos email password y roles
-    const newEmail = req.body.email;
-    const newPassword = req.body.password;
-    const newRoles = req.body.roles;
-    if (newEmail == null || newPassword == null || newEmail === '' || newPassword === '') {
-      return resp.status(400).json({ message: 'Email and password must not be empty.' });
-    }
-    if (foundedUser) {
-      try {
-        foundedUser.email = newEmail;
-        foundedUser.password = newPassword;
-        foundedUser.roles = newRoles;
-
-        await foundedUser.save();
-        return resp.status(200).json({
-          id: foundedUser.dataValues.id,
-          email: newEmail,
-          password: newPassword,
-          roles: {
-            admin: newRoles,
-          },
-        });
-      } catch (error) {
-        return resp.status(500).json({ error: error.message });
-      }
-    } else {
-      return resp.status(404).json({ error: 'User not found.' });
-    }
-  });
+  app.put('/users/:uid', requireAdmin, putUsers);
 
   /**
    * @name DELETE /users
@@ -231,20 +160,7 @@ module.exports = (app, next) => {
    * @code {403} si no es ni admin o la misma usuaria
    * @code {404} si la usuaria solicitada no existe
    */
-  app.delete('/users/:uid', requireAuth, async (req, resp, next) => {
-    const userIdAsParm = req.params.uid;
-    const foundedUser = await schemeTablaUser.findByPk(userIdAsParm);
-    if (foundedUser) {
-      try {
-        // metodo destroy elimina/ en where se especifica el id
-        await schemeTablaUser.destroy({ where: { id: userIdAsParm } });
-        return resp.status(200).json({ message: 'User was deleted' });
-      } catch (error) {
-        return resp.status(404).json({ error: 'User was not deleted' });
-      }
-    }
-    return resp.status(404).json({ error: 'User not found.' });
-  });
+  app.delete('/users/:uid', requireAuth, deleteUsers);
 
   initAdminUser(app, next);
 };
