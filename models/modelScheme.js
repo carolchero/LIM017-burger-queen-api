@@ -122,34 +122,34 @@ schemeTablaOrder.belongsTo(schemeTablaUser, {
 });
 
 // insert data por defecto
-connection.sync({ force: true }).then(() => {
-  schemeTablaUser.create({
-    email: 'admin@gmail.com',
-    password: '$2b$10$bhOcgMtXGtqiwdMOh1EZHuydzdr0tcwT/bgjVONRzrzmPZ5MRMdKC',
-    // eslint-disable-next-line object-curly-newline
-    roles: true });
+// connection.sync({ alter: true }).then(() => {
+//   schemeTablaUser.create({
+//     email: 'admin@gmail.com',
+//     password: '$2b$10$bhOcgMtXGtqiwdMOh1EZHuydzdr0tcwT/bgjVONRzrzmPZ5MRMdKC',
+//     // eslint-disable-next-line object-curly-newline
+//     roles: true });
 
-  schemeTablaProduct.create({
-    name: 'mango',
-    price: 10.00,
-    image: 'http://image.fake1',
-    type: 'DESAYUNO',
-  });
+//   schemeTablaProduct.create({
+//     name: 'mango',
+//     price: 10.00,
+//     image: 'http://image.fake1',
+//     type: 'DESAYUNO',
+//   });
 
-  schemeTablaProduct.create({
-    name: 'pera',
-    price: 12.00,
-    image: 'http://image.fake2',
-    type: 'DESAYUNO',
-  });
+//   schemeTablaProduct.create({
+//     name: 'pera',
+//     price: 12.00,
+//     image: 'http://image.fake2',
+//     type: 'DESAYUNO',
+//   });
 
-  schemeTablaProduct.create({
-    name: 'nabo',
-    price: 5.00,
-    image: 'http://image.fake3',
-    type: 'DESAYUNO',
-  });
-});
+//   schemeTablaProduct.create({
+//     name: 'nabo',
+//     price: 5.00,
+//     image: 'http://image.fake3',
+//     type: 'DESAYUNO',
+//   });
+// });
 
 schemeTablaOrdersProduct.belongsTo(schemeTablaProduct, { foreingKey: 'productId' });
 schemeTablaProduct.hasMany(schemeTablaOrdersProduct, { foreingKey: 'productId' });
