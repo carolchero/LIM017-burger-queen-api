@@ -17,7 +17,6 @@ module.exports = {
       .catch((error) => { resp.status(500).json({ message: error.message }); });
   },
 
-
   getOrdersById: async (req, resp, next) => {
     const orderIdasParm = req.params.orderId;
 
