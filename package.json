@@ -9,8 +9,9 @@
   "scripts": {
     "pretest.off": "eslint .",
     "start": "node index.js",
-    "test:e2e": "jest --verbose --testPathPattern e2e --globalSetup ./e2e/globalSetup --globalTeardown ./e2e/globalTeardown --runInBand",
-    "test:unit": "jest --detectOpenHandles --verbose --testPathIgnorePatterns e2e --coverage",
+    "test:e2e": "jest --verbose --testPathPattern e2e --globalSetup ./e2e/globalSetup --globalTeardown ./e2e/globalTeardown --runInBand --coverage --detectOpenHandles",
+    "test:unit": "jest --verbose --testPathIgnorePatterns e2e --coverage --config --forceExit",
+    "test:prueba": "jest --verbose --testPathIgnorePatterns e2e",
     "test": "npm run test:e2e && npm run test:unit",
     "lint": "eslint .",
     "docs:generate": "jsdoc -c jsdoc.conf --readme README-docs.md",
