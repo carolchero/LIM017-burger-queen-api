@@ -57,3 +57,6 @@ pgClient.query('SELECT NOW()', (err, res) => {
   pgClient.end();
 });
  */
+module.export = {
+  app,
+};

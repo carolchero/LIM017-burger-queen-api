@@ -24,7 +24,7 @@ module.exports = (secret) => (req, resp, next) => {
 };
 
 module.exports.isAuthenticated = (req) => {
-  /*console.log('checking req access-token:: ', req.headers['access-token']);
+  console.log('checking req access-token:: ', req.headers['access-token']);
   const token = req.headers['access-token'];
   let flagTokenValid = false;
 
@@ -43,13 +43,11 @@ module.exports.isAuthenticated = (req) => {
     console.log("token NO ENVIADO en el request");
   }
   return flagTokenValid;
-  */
- return true;
 };
 
 module.exports.isAdmin = (req) => {
   // TODO: decidir por la informacion del request si la usuaria es admin
-  /*let flagIsAdmin = false;
+  let flagIsAdmin = false;
   console.log('checking isAdmin req:: ', req);
   jwt.verify(req.headers['access-token'], config.secret, (err, decoded) => {
     if (err) {
@@ -63,8 +61,7 @@ module.exports.isAdmin = (req) => {
     }
   });
   console.log('retornando flagIsAdmin ', flagIsAdmin);
-  return flagIsAdmin;*/
-  return true;
+  return flagIsAdmin;
 };
 
 module.exports.requireAuth = (req, resp, next) => (
