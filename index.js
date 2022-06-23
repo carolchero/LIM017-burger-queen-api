@@ -51,6 +51,7 @@ routes(app, (err) => {
   });
 });
 
+module.exports = app;
 /* pgClient.connect();
 pgClient.query('SELECT NOW()', (err, res) => {
   console.log(err, res);
