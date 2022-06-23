@@ -122,9 +122,9 @@ schemeTablaOrder.belongsTo(schemeTablaUser, {
 });
 
 // insert data por defecto
-connection.sync({ alter: true }).then(() => {
+connection.sync({ force: true }).then(() => {
   schemeTablaUser.create({
-    email: 'admiDefault@gmail.com',
+    email: 'admin@gmail.com',
     password: '$2b$10$bhOcgMtXGtqiwdMOh1EZHuydzdr0tcwT/bgjVONRzrzmPZ5MRMdKC',
     // eslint-disable-next-line object-curly-newline
     roles: true });
