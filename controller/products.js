@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 const {
   schemeTablaProduct,
 } = require('../models/modelScheme');

@@ -24,7 +24,7 @@ module.exports = (secret) => (req, resp, next) => {
 };
 
 module.exports.isAuthenticated = (req) => {
-  //console.log('checking req access-token:: ', req.headers['access-token']);
+  // console.log('checking req access-token:: ', req.headers['access-token']);
   const token = req.headers['access-token'];
   let flagTokenValid = false;
 
@@ -32,15 +32,15 @@ module.exports.isAuthenticated = (req) => {
   if (token) {
     jwt.verify(token, config.secret, (err, decoded) => {
       if (err) {
-        console.log('token no valido!!!!!');
+        // console.log('token no valido!!!!!');
       } else {
         req.decoded = decoded;
-        console.log('token SI valido!!!!! decoded ', decoded);
+        // console.log('token SI valido!!!!! decoded ', decoded);
         flagTokenValid = true;
       }
     });
   } else {
-    console.log("token NO ENVIADO en el request");
+    // console.log("token NO ENVIADO en el request");
   }
   return flagTokenValid;
 };
@@ -51,16 +51,16 @@ module.exports.isAdmin = (req) => {
   // console.log('checking isAdmin req:: ', req);
   jwt.verify(req.headers['access-token'], config.secret, (err, decoded) => {
     if (err) {
-      console.log('token no valido!!!!!');
+      // console.log('token no valido!!!!!');
     } else {
       req.decoded = decoded;
-      console.log('token SI valido!!!!! decoded ', decoded);
-      console.log('token SI valido!!!!! decoded email ', decoded.email);
+      // console.log('token SI valido!!!!! decoded ', decoded);
+      // console.log('token SI valido!!!!! decoded email ', decoded.email);
 
       flagIsAdmin = decoded.roles;
     }
   });
-  console.log('retornando flagIsAdmin ', flagIsAdmin);
+  // console.log('retornando flagIsAdmin ', flagIsAdmin);
   return flagIsAdmin;
 };
 
