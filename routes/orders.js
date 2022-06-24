@@ -67,9 +67,9 @@ module.exports = (app, nextMain) => {
 
   app.get('/getAllOrders', requireAuth, getAllOrdersProducts);
 
-  app.get('/getAllOrders/:_page/:_limit', getAllOrdersProductsPage);
+  app.get('/getAllOrders/:_page/:_limit', requireAuth, getAllOrdersProductsPage);
 
-  app.get('/getAllOrders/:_idOrden', getAllOrdersProductsById);
+  app.get('/getAllOrders/:_idOrden', requireAuth, getAllOrdersProductsById);
 
   /**
    * @name POST /orders
