@@ -1,44 +1,75 @@
-/* eslint-disable quotes */
-/* eslint-disable import/no-unresolved */
-const request = require('supertest');
+const supertest = require('supertest');
 const assert = require('assert');
 const express = require('express');
-//const app = require('../../routes/users');
-const app = express();
+const users = require('../../routes/users');
+const app = require('../../server');
 
-const {
-  getUsers,
-} = require('../users');
-//const { hasUncaughtExceptionCaptureCallback } = require('process');
+const request = supertest(app);
 
-describe("GET/tasks", () => {
-  console.log(app);
-  test('should respond with a 500 status code',async()=>{
-    const response = await request(app)
-      .get("/tasks")
-      .send();
-    expect(response.statusCode).toBe(404);
-    console.log(response);
+const adminUser = {
+  email: 'admin@gmail.com',
+  password: '123456',
+};
+
+const userNoAdmi = {
+  email: 'user5@gmail.com',
+  password: '123456',
+  roles: false,
+};
+
+describe('GET USERS', () => {
+  it('should get users collection', (done) => {
+    request.post('/auth').send(adminUser).then((resp) => {
+      const token = resp.body.accessToken;
+      request.get('/users').set('access-token', `${token}`)
+        .expect('Content-Type', /json/)
+        .expect(200)
+        .then((response) => {
+          expect(Array.isArray(response.body)).toBeTruthy();
+          done();
+        });
+    });
   });
-  it ('should get users collection',(done)=>{
+  it('should return an error 401 when is not token', (done) => {
+    request.post('/auth').send({}).then((resp) => {
+      const token = resp.body;
+      request.get('/users').set('access-token', `${token}`)
+        .expect('Content-Type', /json/)
+        .expect(401)
+        .then((response) => {
+          expect(response.body.message).toEqual('Unauthorized');
+          done();
+        });
+    });
+  });
+});
+
+// en proceso
+/* describe('DELETE USER', () => {
+  it('should delete user by id', (done) => {
+    request.post('/users/8')
+      .send(userNoAdmi)
+      .expect('Content-Type', /json/)
+      .expect(200);
+      .then((response) => {
+        console.log(response.body)
+        expect(response.statusCode).toEqual(200);
+      });
     done();
   });
 });
 
-
-describe('POST /user', function() {
-  it('user.name should be an case-insensitive match for "john"', function(done) {
-    request(app)
-      .post('/user')
-      .send('name=john') // x-www-form-urlencoded upload
-      .set('Accept', 'application/json')
-      .expect(function(res) {
-        res.body.id = 'some fixed id';
-        res.body.name = res.body.name.toLowerCase();
-      })
-      .expect(200, {
-        id: 'some fixed id',
-        name: 'john'
-      }, done);
+describe('POST USERS', () => {
+  it('should', (done) => {
+    request.post('/users')
+      .send(userNoAdmi)
+      .expect('Content-Type', /json/)
+      .then((response) => {
+        console.log(response.body)
+        expect(response.statusCode).toEqual(200);
+      });
+    done();
   });
 });
+
+ */
