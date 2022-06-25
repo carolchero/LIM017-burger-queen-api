@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable no-restricted-syntax */
 const {
@@ -71,6 +72,7 @@ module.exports = {
       resp.status(404);
     });
   },
+
   postOrders: (req, resp, next) => {
     const userIdFromReq = req.body.userId;
     const clientFromReq = req.body.client;
@@ -93,8 +95,10 @@ module.exports = {
       }
       schemeTablaOrder.findByPk(createdOrder.id, {
       }).then((order) => {
-        order ? resp.status(200).json({ order }) : resp.status(404);
+        resp.status(200).json({ order });
       });
+    }, (error) => {
+      resp.status(404).json({ error });
     });
   },
 
@@ -118,23 +122,23 @@ module.exports = {
         await foundedOrder.save();
         return resp.status(200).json({ message: 'Order updated successfully.' });
       } catch (error) {
-        return resp.status(404).json({ message: error.message });
+        return resp.status(404).json({ error: error.message });
       }
     } else {
       return resp.status(404).json({ message: 'Order not found.' });
     }
   },
 
-
   deleteOrdersById: async (req, resp, next) => {
     const orderIdAsParm = req.params.orderId;
     const foundedOrder = await schemeTablaOrder.findByPk(orderIdAsParm);
     if (foundedOrder) {
       try {
+        await schemeTablaOrdersProduct.destroy({ where: { orderId: orderIdAsParm } });
         await schemeTablaOrder.destroy({ where: { id: orderIdAsParm } });
         return resp.status(200).json({ message: 'Order was deleted' });
       } catch (error) {
-        resp.status(404).json({ message: 'Order was not deleted' });
+        resp.status(404).json({ error: 'Order was not deleted' });
       }
     }
     return resp.status(404).json({ message: 'Order not found.' });
