@@ -90,7 +90,7 @@ describe('POST/products', () => {
       .expect(401);
     done();
   });
-  it('should return a statusCode 200 and array when get all products', (done) => {
+  it('should return a statusCode 200 when create new products', (done) => {
     request.post('/auth').send(adminUserCorrect).then((resp) => {
       const token = resp.body.accessToken;
       request.post('/products').set('access-token', `${token}`)
@@ -102,7 +102,7 @@ describe('POST/products', () => {
     });
   });
 
-  it('should return a error 404 when product not found', (done) => {
+  it('should return a error 400 when Name and price must not be empty', (done) => {
     request.post('/auth').send(adminUserCorrect).then((resp) => {
       const token = resp.body.accessToken;
       request.post('/products').set('access-token', `${token}`)
