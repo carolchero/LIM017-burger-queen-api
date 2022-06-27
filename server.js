@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const config = require('./config');
 const authMiddleware = require('./middleware/auth');
 const errorHandler = require('./middleware/error');
@@ -12,6 +13,7 @@ const app = express();
 
 app.set('config', config);
 app.set('pkg', pkg);
+app.use(cors());
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
