@@ -47,8 +47,8 @@ module.exports = {
     if (nameFromReq == null || priceFromReq == null || nameFromReq === '' || priceFromReq === '') {
       return resp.status(400).json({ message: 'Name and price must not be empty.' });
     }
-    if (typeFromReq == null) {
-      return resp.status(400).json({ error: 'Type provided is not supported. Valid values: DESAYUNO, ALMUERZO, CENA' });
+    if (typeFromReq == null || typeFromReq === '') {
+      return resp.status(400).json({ error: 'Type provided is not supported' });
     }
     schemeTablaProduct.create({
       userId: idUserFromReq,

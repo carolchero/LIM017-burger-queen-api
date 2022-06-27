@@ -128,6 +128,11 @@ schemeTablaOrder.belongsTo(schemeTablaUser, {
     password: '$2b$10$bhOcgMtXGtqiwdMOh1EZHuydzdr0tcwT/bgjVONRzrzmPZ5MRMdKC',
     // eslint-disable-next-line object-curly-newline
     roles: true });
+  schemeTablaUser.create({
+    email: 'noadmin@gmail.com',
+    password: '$2b$10$bhOcgMtXGtqiwdMOh1EZHuydzdr0tcwT/bgjVONRzrzmPZ5MRMdKC',
+    // eslint-disable-next-line object-curly-newline
+    roles: false });
   schemeTablaProduct.create({
     name: 'mango',
     price: 10.00,
